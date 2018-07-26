@@ -10,8 +10,10 @@ module.exports = class Logger extends Base {
   }
 
   setup() {
-    global.emitter.on('message', (message, event) => {
-      console.log(colors[this.getColor(event)](`[${time.print()}] ${message}`));
+    global.emitter.on('message', (message, event, sender) => {
+      console.log(
+        colors[this.getColor(event)](`[${time.print()}] [${sender}] ${message}`)
+      );
     });
   }
 
