@@ -6,13 +6,12 @@ const colors = require('colors');
 const fs = require('fs-extra');
 const path = require('path');
 
-module.exports = class Logger extends Base {
+module.exports = class Logger {
   constructor() {
-    super(__dirname);
+    this.construct(__dirname);
     this.logFile = path.resolve(global.settingsPath, 'logger.log');
     fs.ensureFileSync(this.logFile);
   }
-
   setup() {
     global.emitter.on('message', (message, event, sender) => {
       console.log(
