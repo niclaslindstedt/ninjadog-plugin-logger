@@ -1,7 +1,4 @@
-const argv = require('minimist')(process.argv.slice(2));
-const verbose = argv.hasOwnProperty('debug') && argv.debug === true;
 const { time } = require(`${global.appRoot}/lib`);
-const Base = require('ninjakatt-plugin-base');
 const colors = require('colors');
 const fs = require('fs-extra');
 const path = require('path');
