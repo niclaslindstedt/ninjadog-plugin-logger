@@ -18,7 +18,7 @@ module.exports = class Logger {
         this.writeLog({
           color: this.getColor(event),
           time: time.print(),
-          message: `[${sender}] ${message}`
+          message: `[${sender}] ${message}`,
         });
       }
     });
@@ -79,42 +79,42 @@ module.exports = class Logger {
   }
 
   shouldLog(event) {
-    const logLevel = this.settings.loglevel;
+    switch (this.settings.loglevel) {
+      case 'error':
+        return event === 'error';
 
-    const levels = {
-      1: ['success', 'add', 'error', 'remove'],
-      2: ['connect', 'disconnect'],
-      3: ['start'],
-      4: ['info']
-    };
+      case 'warn':
+        return event === 'error' || event === 'warn';
 
-    let shouldLog = false;
+      case 'info':
+        return event !== 'debug' && event !== 'diag';
 
-    for (let i = 1; i <= logLevel; i++) {
-      if (levels[i].includes(event)) {
-        shouldLog = true;
-      }
+      case 'debug':
+        return event !== 'diag';
+
+      default:
+      case 'diag':
+        return true;
     }
-
-    return shouldLog;
   }
 
   getColor(event = 'none') {
     switch (event) {
-      case 'start':
-        return 'yellow';
-      case 'info':
-        return 'cyan';
-      case 'connect':
-      case 'success':
-      case 'add':
-        return 'green';
       case 'error':
-      case 'disconnect':
-      case 'remove':
         return 'red';
+
+      case 'warn':
+        return 'orange';
+
       default:
-        return 'white';
+      case 'info':
+        return 'blue';
+
+      case 'debug':
+        return 'cyan';
+
+      case 'diag':
+        return 'yellow';
     }
   }
 };
