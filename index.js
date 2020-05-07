@@ -106,7 +106,6 @@ module.exports = class Logger {
       case 'warn':
         return 'orange';
 
-      default:
       case 'info':
         return 'blue';
 
@@ -115,6 +114,9 @@ module.exports = class Logger {
 
       case 'diag':
         return 'yellow';
+
+      default:
+        return 'white';
     }
   }
 };
