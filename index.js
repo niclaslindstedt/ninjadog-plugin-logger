@@ -9,26 +9,47 @@ module.exports = class Logger {
     this.logFile = path.resolve(global.settingsPath, 'logger.log');
     fs.ensureFileSync(this.logFile);
   }
-  setup() {
-    global.emitter.on('message', (message, event, sender) => {
-      console.log(
-        colors[this.getColor(event)](`[${time.print()}] [${sender}] ${message}`)
-      );
-      if (this.settings.saveToFile && this.shouldLog(event)) {
-        this.writeLog({
-          color: this.getColor(event),
-          time: time.print(),
-          message: `[${sender}] ${message}`,
-        });
-      }
-    });
 
-    setTimeout(() => {
-      if (global.Ninjakatt.plugins.has('Webserver')) {
-        this.addWebroutes();
-      }
-    }, 0);
+  setup() {
+    this.logDebug('Setting up logger plugin');
   }
+
+  subscriptions() {
+    this.subscribe('message', this.actOnMessage);
+  }
+
+  routes() {
+    this.route('get', 'log', this.getLog);
+    this.route('delete', 'log', this.deleteLog);
+  }
+
+  /********* Event Functions *********/
+
+  actOnMessage = (message, event, sender) => {
+    const eventColor = this.getColor(event);
+    console.log(colors[eventColor](`[${time.print()}] [${sender}] ${message}`));
+    if (this.settings.saveToFile && this.shouldLog(event)) {
+      this.writeLog({
+        color: eventColor,
+        time: time.print(),
+        message: `[${sender}] ${message}`,
+      });
+    }
+  };
+
+  /********* Route Functions *********/
+
+  getLog = async (req, res) => {
+    const log = await this.readLog();
+    return res.status(200).send(log.toString());
+  };
+
+  deleteLog = async (req, res) => {
+    await this.deleteLog();
+    return res.status(200).send();
+  };
+
+  /********* Plugin Functions *********/
 
   async writeLog({ color, time, message }) {
     try {
@@ -52,30 +73,6 @@ module.exports = class Logger {
         fs.writeJSON(path.resolve(global.settingsPath, this.fileName), []);
       }
     }
-  }
-
-  addWebroutes() {
-    const prefix = Logger.name.toLowerCase();
-
-    emitter.emit(
-      'webserver.add-route',
-      'get',
-      `/${prefix}/log`,
-      async (req, res) => {
-        const log = await this.readLog();
-        res.status(200).send(log.toString());
-      }
-    );
-
-    emitter.emit(
-      'webserver.add-route',
-      'delete',
-      `/${prefix}/log`,
-      async (req, res) => {
-        await this.deleteLog();
-        res.status(200).send();
-      }
-    );
   }
 
   shouldLog(event) {
