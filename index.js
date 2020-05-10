@@ -26,9 +26,13 @@ module.exports = class Logger {
   /********* Event Functions *********/
 
   actOnMessage = (message, event, sender) => {
+    if (!this.shouldLog(event)) { return; }
+
     const eventColor = this.getColor(event);
-    console.log(colors[eventColor](`[${time.print()}] [${sender}] ${message}`));
-    if (this.settings.saveToFile && this.shouldLog(event)) {
+
+    console.log(colors[eventColor](`[${time.print()}] [${sender.toLowerCase()}] ${message}`));
+
+    if (this.settings.saveToFile) {
       this.writeLog({
         color: eventColor,
         time: time.print(),
@@ -76,27 +80,34 @@ module.exports = class Logger {
   }
 
   shouldLog(event) {
-    switch (this.settings.loglevel) {
-      case 'error':
-        return event === 'error';
+    const logLevel = this.settings.loglevel;
 
-      case 'warn':
-        return event === 'error' || event === 'warn';
+    const levels = {
+      1: ['error', 'warn', 'success', 'addition', 'removal'],
+      2: ['info'],
+      3: ['debug'],
+      4: ['diag']
+    };
 
-      case 'info':
-        return event !== 'debug' && event !== 'diag';
+    let shouldLog = false;
 
-      case 'debug':
-        return event !== 'diag';
-
-      default:
-      case 'diag':
-        return true;
+    for (let i = 1; i <= logLevel; i++) {
+      if (levels[i].includes(event)) {
+        shouldLog = true;
+      }
     }
+
+    return shouldLog;
   }
 
   getColor(event = 'none') {
     switch (event) {
+      case 'connect':
+      case 'success':
+      case 'add':
+        return 'green';
+
+      case 'remove':
       case 'error':
         return 'red';
 
@@ -110,7 +121,7 @@ module.exports = class Logger {
         return 'cyan';
 
       case 'diag':
-        return 'yellow';
+        return 'gray';
 
       default:
         return 'white';
