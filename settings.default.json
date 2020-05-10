@@ -1,4 +1,4 @@
 {
   "saveToFile": true,
-  "loglevel": 1
+  "loglevel": "info"
 }

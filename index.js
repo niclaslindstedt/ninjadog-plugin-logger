@@ -25,10 +25,10 @@ module.exports = class Logger {
 
   /********* Event Functions *********/
 
-  actOnMessage = (message, event, sender) => {
+  actOnMessage = (message, event, sender, eventColor) => {
     if (!this.shouldLog(event)) { return; }
 
-    const eventColor = this.getColor(event);
+    eventColor = eventColor || 'blue';
 
     console.log(colors[eventColor](`[${time.print()}] [${sender.toLowerCase()}] ${message}`));
 
@@ -80,24 +80,23 @@ module.exports = class Logger {
   }
 
   shouldLog(event) {
-    const logLevel = this.settings.loglevel;
+    switch (this.settings.loglevel) {
+      case 'error':
+        return event === 'error';
 
-    const levels = {
-      1: ['error', 'warn', 'success', 'addition', 'removal'],
-      2: ['info'],
-      3: ['debug'],
-      4: ['diag']
-    };
+      case 'warn':
+        return event === 'error' || event === 'warn';
 
-    let shouldLog = false;
+      case 'info':
+        return event !== 'debug' && event !== 'diag';
 
-    for (let i = 1; i <= logLevel; i++) {
-      if (levels[i].includes(event)) {
-        shouldLog = true;
-      }
+      case 'debug':
+        return event !== 'diag';
+
+      default:
+      case 'diag':
+        return true;
     }
-
-    return shouldLog;
   }
 
   getColor(event = 'none') {
