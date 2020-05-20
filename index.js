@@ -86,33 +86,33 @@ module.exports = class Logger {
   }
 
   shouldLog(event) {
+    const isError = event === 'error';
+    const isWarn = event === 'warn';
+    const isInfo = event === 'info';
+    const isDebug = event === 'debug';
+    const isDiag = event === 'diag';
+
     switch (this.settings.loglevel) {
       case 'error':
-        return event === 'error';
+        return isError;
 
       case 'warn':
-        return event === 'error' || event === 'warn';
-
-      case 'info':
-        return event !== 'debug' && event !== 'diag';
-
-      case 'debug':
-        return event !== 'diag';
+        return isError || isWarn;
 
       default:
+      case 'info':
+        return isError || isWarn || isInfo;
+
+      case 'debug':
+        return isError || isWarn || isInfo || isDebug;
+
       case 'diag':
-        return true;
+        return isError || isWarn || isInfo || isDebug || isDiag;
     }
   }
 
   getColor(event = 'none') {
     switch (event) {
-      case 'connect':
-      case 'success':
-      case 'add':
-        return 'green';
-
-      case 'remove':
       case 'error':
         return 'red';
 
