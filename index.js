@@ -26,11 +26,17 @@ module.exports = class Logger {
   /********* Event Functions *********/
 
   actOnMessage = (message, event, sender, eventColor) => {
-    if (!this.shouldLog(event)) { return; }
+    if (!this.shouldLog(event)) {
+      return;
+    }
 
     eventColor = eventColor || 'blue';
 
-    console.log(colors[eventColor](`[${time.print()}] [${sender.toLowerCase()}] ${message}`));
+    this.logConsole(
+      colors[eventColor](
+        `[${time.print()}] [${sender.toLowerCase()}] ${message}`
+      )
+    );
 
     if (this.settings.saveToFile) {
       this.writeLog({
@@ -58,10 +64,10 @@ module.exports = class Logger {
   async writeLog({ color, time, message }) {
     try {
       const file = fs.createWriteStream(this.logFile, { flags: 'a' });
-      file.write(`${color};${new Date().toLocaleString()};${message}\n`);
+      file.write(`${color};${new Date(time).toLocaleString()};${message}\n`);
       file.end();
     } catch (e) {
-      console.log(e);
+      this.logConsole(e);
     }
   }
 
