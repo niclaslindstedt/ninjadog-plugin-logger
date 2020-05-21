@@ -12,7 +12,6 @@ module.exports = class Logger {
   }
 
   setup() {
-    this.logDebug('Setting up logger plugin');
   }
 
   subscriptions() {
@@ -24,7 +23,7 @@ module.exports = class Logger {
     this.route('delete', 'log', this.deleteLog);
   }
 
-  /** ******* Event Functions *********/
+  /** Event Functions **/
 
   actOnMessage = (message, event, sender) => {
     if (!this.shouldLog(event)) {
@@ -48,7 +47,7 @@ module.exports = class Logger {
     }
   };
 
-  /** ******* Route Functions *********/
+  /** Route Functions **/
 
   getLog = async (req, res) => {
     const log = await this.readLog();
@@ -60,7 +59,7 @@ module.exports = class Logger {
     return res.status(200).send();
   };
 
-  /** ******* Plugin Functions *********/
+  /** Plugin Functions **/
 
   async writeLog({ color, time, message }) {
     try {
