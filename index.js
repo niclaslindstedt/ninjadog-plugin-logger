@@ -4,6 +4,7 @@ const fs = require('fs-extra');
 const path = require('path');
 
 module.exports = class Logger {
+
   constructor() {
     this.construct(__dirname);
     this.logFile = path.resolve(global.settingsPath, 'logger.log');
@@ -23,7 +24,7 @@ module.exports = class Logger {
     this.route('delete', 'log', this.deleteLog);
   }
 
-  /********* Event Functions *********/
+  /** ******* Event Functions *********/
 
   actOnMessage = (message, event, sender) => {
     if (!this.shouldLog(event)) {
@@ -47,7 +48,7 @@ module.exports = class Logger {
     }
   };
 
-  /********* Route Functions *********/
+  /** ******* Route Functions *********/
 
   getLog = async (req, res) => {
     const log = await this.readLog();
@@ -59,7 +60,7 @@ module.exports = class Logger {
     return res.status(200).send();
   };
 
-  /********* Plugin Functions *********/
+  /** ******* Plugin Functions *********/
 
   async writeLog({ color, time, message }) {
     try {
@@ -132,4 +133,5 @@ module.exports = class Logger {
         return 'white';
     }
   }
+
 };
