@@ -15,7 +15,7 @@ module.exports = class Logger {
   }
 
   subscriptions() {
-    this.subscribe('message', this.actOnMessage);
+    this.subscribe('log', this.actOnMessage);
   }
 
   routes() {
@@ -49,7 +49,7 @@ module.exports = class Logger {
 
   /** Route Functions **/
 
-  getLog = async (req, res) => {
+  getLog = async (_req, res) => {
     const log = await this.readLog();
     return res.status(200).send(log.toString());
   };
@@ -61,10 +61,10 @@ module.exports = class Logger {
 
   /** Plugin Functions **/
 
-  async writeLog({ color, time, message }) {
+  async writeLog({ level, time, message }) {
     try {
       const file = fs.createWriteStream(this.logFile, { flags: 'a' });
-      file.write(`${color};${new Date(time).toLocaleString()};${message}\n`);
+      file.write(`${new Date(time).toLocaleString()};${level};${message}\n`);
       file.end();
     } catch (e) {
       this.logConsole(e);
