@@ -25,12 +25,12 @@ module.exports = class Logger {
 
   /********* Event Functions *********/
 
-  actOnMessage = (message, event, sender, eventColor) => {
+  actOnMessage = (message, event, sender) => {
     if (!this.shouldLog(event)) {
       return;
     }
 
-    eventColor = eventColor || 'blue';
+    const eventColor = this.getColor(event);
 
     this.logConsole(
       colors[eventColor](
